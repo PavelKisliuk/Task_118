@@ -1,82 +1,133 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Formatter;
+import java.util.FormatterClosedException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Task_118 {
 	public static void main(String[] args) {
-		ListOfSuicides l = new ListOfSuicides("INPUT.txt");
-		l.kill();
+		try(Formatter output = new Formatter("OUTPUT.txt")) {
+			ListOfSuicides test = new ListOfSuicides();
+			output.format("%d", test.kill());
+		}catch (FileNotFoundException | FormatterClosedException e) {
+			e.printStackTrace();
+		}
 	}
 
 
 }
-
-class ListOfSuicides {
+//-----------------------------------------------------------------------------
+/*public*/class ListOfSuicides {
+	//-----------------------------------------------------------------------------fields
 	private Integer amountOfSuicides;
-	private Integer range;
-	private CircleList mainList;
-
-	public ListOfSuicides(String path)
+	private Integer range;//through how much people we kill next man
+	private CircleList mainList;//pointer to one Suicides
+	//-----------------------------------------------------------------------------constructors
+	/*public*/ private ListOfSuicides(String path)
 	{
+		this.amountOfSuicides = 0;
+		this.range = 0;
 		try(Scanner input = new Scanner(Paths.get(path))) {
+			//-----------------------------------------------------------------------------
 			if(input.hasNext()) {
-				String parametersListOfSuicides = input.nextLine().strip();
-				if(isCorrectParametersOfListOfSuicides(parametersListOfSuicides)) {
-					String[] tokensParametersOfLabyrinth = parametersListOfSuicides.split(" ");
+				//-----------------------------------------------------------------------------
+				String parametersListOfSuicides = input.nextLine().strip();//read data from file
+				//-----------------------------------------------------------------------------
+				if(this.isCorrectParametersOfListOfSuicides(parametersListOfSuicides)) {
+					String[] tokensParametersOfSuicides = parametersListOfSuicides.split(" ");
 					int numberOfParameter = 0;
-					amountOfSuicides = Integer.valueOf(tokensParametersOfLabyrinth[numberOfParameter]);
+					this.amountOfSuicides = Integer.valueOf(tokensParametersOfSuicides[numberOfParameter]);
 					numberOfParameter++;
-					range = Integer.valueOf(tokensParametersOfLabyrinth[numberOfParameter]);
-					if(this.amountOfSuicides == 1) {
+					this.range = Integer.valueOf(tokensParametersOfSuicides[numberOfParameter]);
+					if(this.amountOfSuicides == 1) {//if we have only one Suicide he should live
 						this.range = 0;
 					}
 				}
+				//-----------------------------------------------------------------------------
+				else{
+					throw new IOException("Incorrect value in file!");
+				}
+				//-----------------------------------------------------------------------------
 			}
+			//-----------------------------------------------------------------------------
 			else {
-
+				throw new IOException("File is empty!");
 			}
-		}catch (IOException e) {
-
+			//-----------------------------------------------------------------------------
+		}catch (IOException | NoSuchElementException e) {
+			e.printStackTrace();
 		}
-
-		mainList = new CircleList();
+		//-----------------------------------------------------------------------------
+		this.mainList = new CircleList();//create first suicide
 		for(int i = 1; i < this.amountOfSuicides; i++) {
-			new CircleList(mainList, i);
+			new CircleList(this.mainList, i);//create the rest of suicides
 		}
 	}
-	public boolean isCorrectParametersOfListOfSuicides(String S)
+
+	/*public*/ ListOfSuicides()
 	{
+		this("INPUT.txt");
+	}
+	//-----------------------------------------------------------------------------methods for constructors
+	private boolean isCorrectParametersOfListOfSuicides(String s)
+	{
+		if(s.matches("[1-9]\\d* [1-9]\\d*")){
+			String[] tokens = s.split(" ");
+			int check = 500;
+			for(String tempS : tokens) {
+				if((Integer.valueOf(tempS) <= check)) {
+					check-= 400;
+				}
+				else{
+					return false;
+				}
+			}
+		}
+		else{
+			return false;
+		}
+
 		return true;
 	}
-
-	public void kill()
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------methods
+	/*public*/ int kill()
 	{
 		for(;;) {
-			if(1 == CircleList.sizeOfList) {
+			//-----------------------------------------------------------------------------
+			if(1 == CircleList.sizeOfList) {//correct element of survive suicide
 				this.mainList = CircleList.findElement(this.mainList, this.range);
 				this.mainList.setNext(null);
 				this.mainList.setPrevious(null);
 				break;
 			}
-			if (CircleList.sizeOfList == this.amountOfSuicides) {
+			//-----------------------------------------------------------------------------
+			//-----------------------------------------------------------------------------
+			if (CircleList.sizeOfList == this.amountOfSuicides) {//first iteration of suicides should be with range - 1
+				//because first suicide already as if keep in mind
 				this.mainList = CircleList.findElement(this.mainList, this.range - 1);
-				CircleList.deleteElement(mainList);
+				CircleList.deleteElement(this.mainList);
 			}
 			else{
 				this.mainList = CircleList.findElement(this.mainList, this.range);
-				CircleList.deleteElement(mainList);
+				CircleList.deleteElement(this.mainList);
 			}
+			//-----------------------------------------------------------------------------
 		}
+		return mainList.getNumberOfSuicide();
 	}
 }
 
-class CircleList {
+/*public*/class CircleList {
+	//-----------------------------------------------------------------------------fields
 	private CircleList next;
 	private CircleList previous;
 	private Integer numberOfSuicide;
 	static int sizeOfList = 0;
-
-	public CircleList(CircleList currentCircleList, Integer number) {
+	//-----------------------------------------------------------------------------constructors
+	/*public*/ CircleList(CircleList currentCircleList, Integer number) {
 		this.numberOfSuicide = number + 1;
 		if(currentCircleList.getNext() != null) {
 			currentCircleList.getPrevious().setNext(this);
@@ -93,36 +144,36 @@ class CircleList {
 		CircleList.sizeOfList++;
 	}
 
-	public CircleList()
+	/*public*/ CircleList()
 	{
 		this.next = null;
 		this.previous = null;
 		this.numberOfSuicide = 1;
 		CircleList.sizeOfList++;
 	}
-
-	public CircleList getNext() {
-		return next;
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------methods
+	/*public*/ private CircleList getNext() {
+		return this.next;
 	}
 
-	public CircleList getPrevious() {
-		return previous;
+	/*public*/ private CircleList getPrevious() {
+		return this.previous;
 	}
 
-	public Integer getNumberOfSuicide() {
+	/*public*/ Integer getNumberOfSuicide() {
 		return numberOfSuicide;
 	}
 
-	public void setNext(CircleList next) {
+	/*public*/ void setNext(CircleList next) {
 		this.next = next;
 	}
 
-	public void setPrevious(CircleList previous) {
+	/*public*/ void setPrevious(CircleList previous) {
 		this.previous = previous;
 	}
 
-
-	public static CircleList findElement(CircleList list, Integer number)
+	static CircleList findElement(CircleList list, Integer number)
 	{
 		for(int i = 0; i < number; i++) {
 			list = list.getNext();
@@ -136,6 +187,5 @@ class CircleList {
 		list.getNext().setPrevious(list.getPrevious());
 		CircleList.sizeOfList--;
 	}
+	//-----------------------------------------------------------------------------
 }
-
-
