@@ -23,11 +23,11 @@ public class Task_118 {
 		private Integer range;//through how much people we kill next man
 		private CircleList mainList;//pointer to one Suicides
 		//-----------------------------------------------------------------------------constructors
-		/*public*/ private ListOfSuicides(String path)
+		/*public*/ private ListOfSuicides(final String path)
 		{
 			this.amountOfSuicides = 0;
 			this.range = 0;
-			try(Scanner input = new Scanner(Paths.get(path))) {
+			try(final Scanner input = new Scanner(Paths.get(path))) {
 				//-----------------------------------------------------------------------------
 				if(input.hasNext()) {
 					//-----------------------------------------------------------------------------
@@ -68,12 +68,11 @@ public class Task_118 {
 			this("INPUT.TXT");
 		}
 		//-----------------------------------------------------------------------------methods for constructors
-		private boolean isCorrectParametersOfListOfSuicides(String s)
+		private boolean isCorrectParametersOfListOfSuicides(final String s)
 		{
 			if(s.matches("[1-9]\\d* [1-9]\\d*")){
-				String[] tokens = s.split(" ");
 				int check = 500;
-				for(String tempS : tokens) {
+				for(String tempS : s.split(" ")) {
 					if((Integer.valueOf(tempS) <= check)) {
 						check-= 400;
 					}
@@ -131,7 +130,7 @@ public class Task_118 {
 		private Integer numberOfSuicide;
 		static int sizeOfList = 0;
 		//-----------------------------------------------------------------------------constructors
-		/*public*/ CircleList(CircleList currentCircleList, Integer number) {
+		/*public*/ CircleList(final CircleList currentCircleList, final Integer number) {
 			this.numberOfSuicide = number + 1;
 			if(currentCircleList.getNext() != null) {
 				currentCircleList.getPrevious().setNext(this);
@@ -169,15 +168,15 @@ public class Task_118 {
 			return numberOfSuicide;
 		}
 
-		/*public*/ void setNext(CircleList next) {
+		/*public*/ void setNext(final CircleList next) {
 			this.next = next;
 		}
 
-		/*public*/ void setPrevious(CircleList previous) {
+		/*public*/ void setPrevious(final CircleList previous) {
 			this.previous = previous;
 		}
 
-		static CircleList findElement(CircleList list, Integer number)
+		static CircleList findElement(CircleList list, final Integer number)
 		{
 			for(int i = 0; i < number; i++) {
 				list = list.getNext();
